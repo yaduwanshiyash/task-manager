@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete div on button click</title>
+</head>
+<body>
+
+<div id="myDiv">
+    <p>This is some content inside the div.</p>
+    <button id="deleteButton">Delete Div</button>
+</div>
+
+<script>
+// Function to handle button click event
+function deleteDiv() {
+    // Get a reference to the parent element
+    var parentElement = document.getElementById("myDiv").parentNode;
+
+    // Get a reference to the div element you want to delete
+    var divToDelete = document.getElementById("myDiv");
+
+    // Remove the div from its parent
+    parentElement.removeChild(divToDelete);
+}
+
+// Get a reference to the delete button
+var deleteButton = document.getElementById("deleteButton");
+
+// Add event listener to the button
+deleteButton.addEventListener("click", deleteDiv);
+</script>
+
+</body>
+</html>

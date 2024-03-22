@@ -1,0 +1,124 @@
+          <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    
+</head>
+
+<body>
+    
+    <div  class="  main border-t-4 border-[#181818]  h-screen w-full bg-[#181818]">
+     <div   class=" flex gap-4  items-center  text-white h-full">
+        <div  class=" ml-3 rounded-lg flex flex-col justify-between    h-[94%]   min-w-52   bg-zinc-800">
+                      <div  class="w-32 flex flex-col  mt-5 ml-9  ">
+                        <img class="rounded-full object-cover object-center h-32 w-48 " src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg?w=768" alt="">
+                        <h1  class="text-2xl flex justify-center mt-3"><%= user.username %></h1>           
+                    </div>
+                     
+<div class="flex flex-col  mb-10      gap-1  ">
+                    <!-- <a href="/profile"><button  class="hover:bg-slate-600 w-full text-xl  py-1  text-center  flex  flex-row gap-5   "    > <i class="ri-home-4-line w-6  ml-10 mt-0.5"></i> profile </button></a> -->
+                    <button  class="hover:bg-slate-600  text-xl  py-1  text-center  flex  flex-row gap-5   "    > <i class="ri-home-4-line w-6  ml-10 mt-0.5"></i> All Task  </button>
+                    <button  class="hover:bg-slate-600  text-xl  py-1 text-center  flex  flex-row gap-4"   ><i class="ri-menu-line w-6  ml-10 mt-0.5"></i>  Importent</button>
+                    <button  class="hover:bg-slate-600  text-xl  py-1  flex  flex-row gap-4"  ><i class="ri-check-double-fill w-6  ml-10 mt-0.5"></i>Completed</button>
+                    <button  class="hover:bg-slate-600  text-xl  py-1  flex  flex-row gap-4"  ><img class="size-7 ml-10	" src="https://www.clker.com/cliparts/W/M/1/A/L/k/incomplete-symbol-md.png" alt="" srcset="">Inompleted</button>
+                    
+                    
+
+ </div>
+
+ <div>
+  <a href="/logout"><button  class="hover:bg-slate-600 w-full text-xl rounded-md py-1 flex mb-0.5 flex-row gap-4 "  > <i class="ri-logout-box-r-line w-6  ml-10 mt-0.5"></i>SignOut</button></a>
+ </div>
+        </div>
+        <div  class="  rounded-lg      h-[94%]   w-full  bg-zinc-800 overflow-y-auto">
+            <div class="sticky bg-zinc-700 top-1 z-50 flex items-center justify-between p-3 rounded-xl ">  <h1  class="text-3xl border-b-4  border-green-700"> <span>All Tasks</span></h1>  <div id="open-form" class="h-10 plus w-10 bg-black rounded-full flex items-center justify-center hover:bg-slate-600"><i class="ri-add-line "></i> </div>
+            <div id="form-container" class=" farm hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]  absolute top-[12vw] right-[32vw]">
+            
+              <form id="my-form" class=" bg-zinc-800 rounded-xl h-[25vw] w-[20vw] flex flex-col gap-4 items-center justify-center" action="/createtask" method="post">
+                <h1 class="text-center text-xl mb-4 ">Add Task</h1>
+                <div class="  ">
+                 
+                  <label  class="block text-white font-bold mb-1">Title</label>
+                  <input type="text" name="title" class="w-full px-3 py-1 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
+              </div>
+             
+              <div class="mb-2.5">
+                  <label  class="block text-white font-bold mb-2">Task</label>
+                  <input type="task"  name="task" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
+              </div>
+              <div class="flex items-center gap-3  justify-between">
+                <button type="button" id="close-form" class="bg-white close2 text-black py-2 px-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md mb-2 hover:bg-gray-200 transition-colors duration-300">Cancel</button>
+                  <button type="submit" class="bg-blue-600 text-white py-2 px-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md mb-2 hover:bg-blue-500 transition-colors duration-300">Create</button>
+              </div>
+              
+              </form>
+            </div>
+          </div>
+        
+           <div  id="deleteTask"  class=" grid grid-cols-3  ms:grid-cols-3 lg:grid-cols-4 gap-4  mb-2 ">
+            <% alltask.forEach(task=>{ %>
+              <div class="h-52  min-w-60 flex  justify-between flex-col gap-2 rounded-xl ml-2 mt-4 overflow-y-auto text-wrap  shadow-[0_3px_10px_rgb(0,0,0,0.2)] p-5  bg-slate-800">   
+              <div class="flex  justify-between "> 
+                <button><i class="ri-star-line"></i></button>
+                 <button id="deleteButton " ><i class="ri-close-line "></i></button>
+              </div>
+              <div class="">
+               <h5 class=" text-2xl  rounded-md  ">  <%= task.title %></h5>
+                <h1 class="  rounded-md  text-pretty "> <%= task.task %></h1>
+              </div>
+              <div class=" w-full flex justify-end ">
+                <button class="py-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Incomplete</button>
+              </div>
+              </div>
+              <% }) %>
+            
+           </div>
+        </div>
+
+
+        
+    </div>
+
+    </div>
+    <script>
+
+
+   
+const plus = document.querySelector(".plus");
+const farm = document.querySelector(".farm");
+const closeButton = document.getElementById("close-form");
+
+let flag = false;
+
+plus.addEventListener("click", function() {
+  if (!flag) {
+    farm.style.display = "block";
+    flag = true;
+  } else {
+    farm.style.display = "none";
+    flag = false;
+  }
+});
+
+closeButton.addEventListener("click", function() {
+  farm.style.display = "none";
+  flag = false;
+});
+
+
+
+
+
+    </script>
+</body>
+</html>
+    
