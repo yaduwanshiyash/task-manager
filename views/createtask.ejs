@@ -1,0 +1,70 @@
+<!-- views/new-task.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Task</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded shadow-md w-96">
+        <h1 class="text-2xl font-semibold mb-4">Create a New Task</h1>
+
+        <!-- Display form validation errors if any -->
+        <% if (errors && errors.length > 0) { %>
+            <div class="text-red-500 mb-4">
+                <ul>
+                    <% errors.forEach(error => { %>
+                        <li><%= error %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        <% } %>
+
+        <!-- Task creation form -->
+        <form action="/tasks" method="POST">
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-600">Title:</label>
+                <input type="text" id="title" name="title" required
+                       class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-600">Description:</label>
+                <textarea id="description" name="description" class="mt-1 p-2 w-full border rounded-md"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="dueDate" class="block text-sm font-medium text-gray-600">Due Date:</label>
+                <input type="date" id="dueDate" name="dueDate" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="priority" class="block text-sm font-medium text-gray-600">Priority:</label>
+                <select id="priority" name="priority" class="mt-1 p-2 w-full border rounded-md">
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium text-gray-600">Status:</label>
+                <select id="status" name="status" class="mt-1 p-2 w-full border rounded-md">
+                    <option value="Pending" selected>Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <!-- You may include additional fields as needed -->
+
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Create Task</button>
+        </form>
+    </div>
+
+</body>
+</html>
