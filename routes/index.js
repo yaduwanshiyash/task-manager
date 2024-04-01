@@ -144,7 +144,7 @@ router.post('/dp', isLoggedIn ,upload.single('image'), async function (req, res,
   let imageupload = await userModel.findOne({username:req.session.passport.user})
   imageupload.picture = req.file.filename,
   await imageupload.save()
-  res.redirect('/profile');
+  res.redirect('/mytask');
 });
 
 
