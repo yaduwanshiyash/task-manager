@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var plm = require('passport-local-mongoose')
 
-mongoose.connect("mongodb://127.0.0.1:27017/taskManagedrgit")
+mongoose.connect("mongodb+srv://yash123:yash12@cluster0.qdqpirv.mongodb.net/taskmanager?retryWrites=true&w=majority&appName=Cluster0")
 .then(() => console.log('Connected!'));
 
 const userSchema = mongoose.Schema({
