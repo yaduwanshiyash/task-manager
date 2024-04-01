@@ -13,16 +13,25 @@ const userSchema = mongoose.Schema({
    password: {
     type: String,
    },
-   posts: [{
+   task: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'post'
+    ref: 'task'
    }],
-   secret: {
-    type: String
-   },
    picture: {
     type: String,
    },
+   fav: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "task",
+  }],
+  Incomplete: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "task",
+  }],
+  complete: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "task",
+  }],
    
 
 
@@ -31,9 +40,3 @@ const userSchema = mongoose.Schema({
 userSchema.plugin(plm);
 
 module.exports = mongoose.model("user",userSchema)
-
-
-// username:String,
-// password:String,
-// secret:String,
-// picture: String 
