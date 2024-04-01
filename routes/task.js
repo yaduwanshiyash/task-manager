@@ -12,6 +12,10 @@ const taskSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+    }],
     createAt: {
         type: Date,
         default: Date.now,

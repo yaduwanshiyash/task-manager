@@ -14,11 +14,16 @@ passport.use(new localStrategy(userModel.authenticate()))
 router.get('/', function(req, res, next) {
   res.render('index');
 });
+
 router.get('/profile', isLoggedIn, async function(req, res, next) {
-  const user = await userModel.findOne({
-    username: req.session.passport.user
-  })
-  res.render('profile', {user});
+  try{
+    const user = await userModel.findOne({
+      username: req.session.passport.user
+    })
+    res.render('profile', {user});
+  } catch(error){
+    next(error);
+  }
 });
 
 router.get('/index', function(req, res, next) {
@@ -43,13 +48,73 @@ router.post('/register',function(req,res){
   userModel.register(userdata,req.body.password)
   .then(function(registereduser){
     passport.authenticate('local')(req,res,function(){
-      res.redirect('/profile')
+      res.redirect('/mytask')
     })
   })
 })
 
 
-
+router.get("/like/task/:id", isLoggedIn, async function(req,res){
+  try{
+    const user = await userModel.findOne({ username: req.session.passport.user})
+    const task = await taskModel.findOne({_id: req.params.id})
+  
+    if(task.likes.indexOf(task._id) == -1){
+      task.likes.push(user._id)
+    }
+    else{
+      task.likes.splice(task.likes.indexOf(user._id), 1)
+    }
+    if(user.fav.indexOf(task._id) == -1){
+      user.fav.push(task._id)
+    }
+    else{
+      user.fav.splice(user.fav.indexOf(task._id), 1)
+    }
+  
+    await task.save();
+    await user.save();
+    res.redirect('back')
+  } catch(error){
+    next(error);
+  }
+})
+router.get("/complete/task/:id", isLoggedIn, async function(req,res){
+  try{
+    const user = await userModel.findOne({ username: req.session.passport.user})
+    const task = await taskModel.findOne({_id: req.params.id})
+  
+    if(user.complete.indexOf(task._id) == -1){
+      user.complete.push(task._id)
+    }
+    else{
+      user.complete.splice(user.complete.indexOf(task._id), 1)
+    }
+  
+    await user.save();
+    res.redirect('back')
+  } catch(error){
+    next(error);
+  }
+})
+router.get("/incomplete/task/:id", isLoggedIn, async function(req,res){
+  try{
+    const user = await userModel.findOne({ username: req.session.passport.user})
+    const task = await taskModel.findOne({_id: req.params.id})
+  
+    if(user.incomplete.indexOf(task._id) == -1){
+      user.incomplete.push(task._id)
+    }
+    else{
+      user.incomplete.splice(user.incomplete.indexOf(task._id), 1)
+    }
+  
+    await user.save();
+    res.redirect('back')
+  } catch(error){
+    next(error);
+  }
+})
 
 
 router.post('/login',passport.authenticate("local",{
@@ -84,41 +149,86 @@ router.post('/dp', isLoggedIn ,upload.single('image'), async function (req, res,
 
 
 
-router.post('/createtask', function(req, res) {
-    var taskdata = taskModel.create({
+router.post('/createtask', async function(req, res) {
+  try{
+    const user = await userModel.findOne({username: req.session.passport.user})
+    var task = await taskModel.create({
       title: req.body.title,
-      task: req.body.task
+      task: req.body.task,
+    user: user._id
     })
-  res.redirect('/alltask',{taskdata});
+    user.task.push(task._id)
+    await user.save();
+  res.redirect('/mytask');
+  } catch(error){
+    next(error);
+  }
 });
 
-// router.post('/createtask', isLoggedIn, async function(req, res) {
-//   const user = await userModel.findOne({username: req.session.passport.user});
-//   const taskdata = await taskModel.create({
-//     title: req.body.title,
-//     task: req.body.task,
-//     user: user._id
-//   });
-//   user.post.push(post._id);
-//   await user.save();
-//   res.redirect('/alltask',{taskdata});
-// });
+router.get("/delete/task/:id", isLoggedIn, async function(req, res) {
+  try {
+    const user = await userModel.findOne({ username: req.session.passport.user });
+    const task = await taskModel.findOne({ _id: req.params.id });
+
+    if (!user || !task) {
+      return res.status(404).send("User or post not found");
+    }
+
+    // Remove post reference from user's posts array
+    const taskIndex = user.task.indexOf(task._id);
+    if (taskIndex !== -1) {
+      user.task.splice(taskIndex, 1);
+    }
+
+    // Save user changes
+    await user.save();
+
+   
+
+    // Remove post document
+    await taskModel.deleteOne({ _id: req.params.id });
+
+    res.redirect("back");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 
 router.get('/mytask',isLoggedIn, async function(req,res,next){
-  var alltask = await taskModel.find()
-  const user = await userModel.findOne({
-    username: req.session.passport.user
-  })
-  res.render('alltask',{alltask,user})  
+  try{
+    const user = await userModel.findOne({
+      username: req.session.passport.user
+    }).populate('task')
+    res.render('alltask',{user}) 
+  } catch(error){
+    next(error);
+  }
 })
 
+router.get('/important',isLoggedIn, async function(req,res,next){
+  try {
+    const user = await userModel.findOne({
+      username: req.session.passport.user
+    }).populate('fav')
+    res.render('important',{user})  
+  } catch (error) {
+    next(error);
+  }
+})
 
-
-// router.get('/mytask', isLoggedIn, async function(req, res, next){
-//   var alltask = await taskModel.find({ user: req.user._id });
-//   res.render('alltask', { alltask, user: req.user });
-// });
+router.get('/completed',isLoggedIn, async function(req,res,next){
+  try{
+    const user = await userModel.findOne({
+      username: req.session.passport.user
+    }).populate('complete')
+    console.log(user);
+    res.render('completed',{user})  
+  } catch(error){
+    next(error);
+  }
+})
 
 
 router.get("/logout",function(req,res,next){
