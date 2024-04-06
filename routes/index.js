@@ -5,6 +5,7 @@ const taskModel = require("./task")
 const passport = require("passport")
 const upload = require("./multer")
 const {route} = require('../app')
+const cloudinary = require('../utils/cloudnary');
 
 const localStrategy = require("passport-local")
 
@@ -34,14 +35,11 @@ router.get('/login', function(req, res, next) {
   res.render('login');
 });
 
-router.get('/test', function(req, res, next) {
-  res.render('test');
-});
 
 router.post('/register',function(req,res){
   var userdata = new userModel({
     username: req.body.username,
-    secret: req.body.secret,
+    email: req.body.email,
     picture: req.body.picture
   })
 
@@ -122,31 +120,36 @@ router.post('/login',passport.authenticate("local",{
   failureRedirect: "/index"
 }),function(req,res){})
 
-router.post('/upload',isLoggedIn, upload.single("file"), async function(req, res, next) {
-  if(!req.file){
-    return res.status(404).send("no files were given")
-  }
-  const user = await userModel.findOne({username: req.session.passport.user});
-    const post = await postModel.create({
-    image: req.file.filename,
-    imageText: req.body.imageText,
-    user: user._id
-  })
+// router.post('/upload',isLoggedIn, upload.single("file"), async function(req, res, next) {
+//   if(!req.file){
+//     return res.status(404).send("no files were given")
+//   }
+//   const user = await userModel.findOne({username: req.session.passport.user});
+//     const post = await postModel.create({
+//     image: req.file.filename,
+//     imageText: req.body.imageText,
+//     user: user._id
+//   })
 
-  user.posts.push(post._id);
-  await user.save()
-  res.redirect("/profile")
+//   user.posts.push(post._id);
+//   await user.save()
+//   res.redirect("/profile")
 
-});
+// });
 
 
 router.post('/dp', isLoggedIn ,upload.single('image'), async function (req, res, next) {
-  let imageupload = await userModel.findOne({username:req.session.passport.user})
-  imageupload.picture = req.file.filename,
-  await imageupload.save()
-  res.redirect('/mytask');
+  try{
+    const result = await cloudinary.uploader.upload(req.file.path);
+    console.log(result);
+    let imageupload = await userModel.findOne({username:req.session.passport.user})
+    imageupload.picture = result.secure_url,
+    await imageupload.save()
+    res.redirect('/mytask');
+  }catch(error){
+    next(error);
+  }
 });
-
 
 
 router.post('/createtask', async function(req, res) {
@@ -155,6 +158,8 @@ router.post('/createtask', async function(req, res) {
     var task = await taskModel.create({
       title: req.body.title,
       task: req.body.task,
+      description: req.body.description,
+      deadline: new Date(req.body.deadline),
     user: user._id
     })
     user.task.push(task._id)
@@ -223,7 +228,6 @@ router.get('/completed',isLoggedIn, async function(req,res,next){
     const user = await userModel.findOne({
       username: req.session.passport.user
     }).populate('complete')
-    console.log(user);
     res.render('completed',{user})  
   } catch(error){
     next(error);
