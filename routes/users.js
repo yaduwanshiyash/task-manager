@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var plm = require('passport-local-mongoose')
 
-mongoose.connect("mongodb+srv://yash123:yash12@cluster0.qdqpirv.mongodb.net/taskmanager?retryWrites=true&w=majority&appName=Cluster0")
+mongoose.connect("mongodb+srv://namanjharaa:" + encodeURIComponent("naman@7068") + "@cluster0.5xrjp0y.mongodb.net/naman?retryWrites=true&w=majority&appName=Cluster0")
 .then(() => console.log('Connected!'));
 
 const userSchema = mongoose.Schema({
@@ -19,6 +19,14 @@ const userSchema = mongoose.Schema({
    }],
    picture: {
     type: String,
+   },
+   email: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    unique: true,
+    required: 'Email address is required',
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
    },
    fav: [{
       type: mongoose.Schema.Types.ObjectId,
