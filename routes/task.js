@@ -5,6 +5,7 @@ const taskSchema = mongoose.Schema({
     title: {
         type:String,
         required: true,
+        unique: true
     },
     task: {
         type: String,
