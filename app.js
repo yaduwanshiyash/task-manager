@@ -9,8 +9,12 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const passport = require('passport');
 const cloudinary = require('./utils/cloudnary');
+const flash = require('express-flash');
+
 
 var app = express();
+
+app.use(flash());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

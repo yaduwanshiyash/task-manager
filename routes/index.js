@@ -1,15 +1,55 @@
+require('dotenv').config();
 var express = require('express');
 var router = express.Router();
+const app = express();
 const userModel = require("./users")
 const taskModel = require("./task")
 const passport = require("passport")
 const upload = require("./multer")
 const {route} = require('../app')
 const cloudinary = require('../utils/cloudnary');
+const nodemailer = require('nodemailer');
+
+
 
 const localStrategy = require("passport-local")
 
 passport.use(new localStrategy(userModel.authenticate()))
+
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+
+
+// const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+// const GOOGLE_CLIENT_ID = '1092055318698-u44mhaf585363r26ddtb8cbkpsjiv051.apps.googleusercontent.com';
+// const GOOGLE_CLIENT_SECRET = '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';
+// passport.use(new GoogleStrategy({
+//     clientID: GOOGLE_CLIENT_ID,
+//     clientSecret: GOOGLE_CLIENT_SECRET,
+//     callbackURL: "http://localhost:3000/mytask"
+//   },
+//   function(accessToken, refreshToken, profile, done) {
+//       userProfile=profile;
+//       return done(null, userProfile);
+//   }
+// ));
+ 
+// router.get('/auth/google', 
+//   passport.authenticate('google', { scope : ['profile', 'email'] }));
+ 
+//   router.get('/auth/google/callback', 
+//   passport.authenticate('google', { failureRedirect: '/error' }),
+//   function(req, res) {
+//     // Successful authentication, redirect success.
+//     res.redirect('/mytask');
+//   });
 
 
 router.get('/', function(req, res, next) {
@@ -36,20 +76,35 @@ router.get('/login', function(req, res, next) {
 });
 
 
-router.post('/register',function(req,res){
-  var userdata = new userModel({
-    username: req.body.username,
-    email: req.body.email,
-    picture: req.body.picture
-  })
+router.post('/register', function(req, res, next) {
+  try {
+    var userdata = new userModel({
+      username: req.body.username,
+      email: req.body.email,
+      picture: req.body.picture
+    });
 
-  userModel.register(userdata,req.body.password)
-  .then(function(registereduser){
-    passport.authenticate('local')(req,res,function(){
-      res.redirect('/mytask')
-    })
-  })
-})
+    userModel.register(userdata, req.body.password)
+      .then(function(registereduser) {
+        passport.authenticate('local')(req, res, function() {
+          res.redirect('/mytask');
+        });
+      })
+      .catch(function(error) {
+        if (error.code === 11000) { 
+          res.status(400).json({ error: 'Email or username already in use.' });
+        } else {
+          // Other errors
+          next(error);
+        }
+      });
+
+    sendWelcomeEmail(req.body.email);
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 
 router.get("/like/task/:id", isLoggedIn, async function(req,res){
@@ -152,20 +207,44 @@ router.post('/dp', isLoggedIn ,upload.single('image'), async function (req, res,
 });
 
 
-router.post('/createtask', async function(req, res) {
-  try{
-    const user = await userModel.findOne({username: req.session.passport.user})
-    var task = await taskModel.create({
+// router.post('/createtask', async function(req, res) {
+//   try{
+//     const user = await userModel.findOne({username: req.session.passport.user})
+//     var task = await taskModel.create({
+//       title: req.body.title,
+//       task: req.body.task,
+//       description: req.body.description,
+//       deadline: new Date(req.body.deadline),
+//     user: user._id
+//     })
+//     user.task.push(task._id)
+//     await user.save();
+//   res.redirect('/mytask');
+//   } catch(error){
+//     next(error);
+//   }
+// });
+
+router.post('/createtask', async function(req, res, next) {
+  try {
+    const existingTask = await taskModel.findOne({ title: req.body.title });
+    if (existingTask) {
+      return res.status(400).json({ error: 'A task with the same title already exists.' });
+    }
+    const user = await userModel.findOne({ username: req.session.passport.user });
+    const newTask = await taskModel.create({
       title: req.body.title,
       task: req.body.task,
       description: req.body.description,
       deadline: new Date(req.body.deadline),
-    user: user._id
-    })
-    user.task.push(task._id)
+      user: user._id
+    });
+
+    user.task.push(newTask._id);
     await user.save();
-  res.redirect('/mytask');
-  } catch(error){
+
+    res.redirect('/mytask');
+  } catch (error) {
     next(error);
   }
 });
@@ -200,6 +279,23 @@ router.get("/delete/task/:id", isLoggedIn, async function(req, res) {
   }
 });
 
+
+router.get('/search',isLoggedIn, async function(req,res,next){
+  try{
+    const user = await userModel.findOne({
+      username: req.session.passport.user
+    }).populate('task')
+    res.render('search',{user}) 
+  } catch(error){
+    next(error);
+  }
+})
+
+router.get('/username/:title', async function(req, res) {
+  const regex = new RegExp(`^${req.params.title}`,'i')
+  const task = await taskModel.find({title: regex})
+  res.json(task);
+});
 
 router.get('/mytask',isLoggedIn, async function(req,res,next){
   try{
@@ -247,6 +343,23 @@ function isLoggedIn(req,res,next){
     return next();
   }
   res.redirect("/")
+}
+
+function sendWelcomeEmail(userEmail) {
+  const mailOptions = {
+    from: 'namanjharaa@gmail.com',
+    to: userEmail,
+    subject: 'Welcome to Your App!',
+    text: 'Thank you for registering on our website. We hope you enjoy using our service.'
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
 }
 
 module.exports = router;

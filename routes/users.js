@@ -1,7 +1,8 @@
+require('dotenv').config();
 var mongoose = require('mongoose')
 var plm = require('passport-local-mongoose')
 
-mongoose.connect("mongodb+srv://namanjharaa:" + encodeURIComponent("naman@7068") + "@cluster0.5xrjp0y.mongodb.net/naman?retryWrites=true&w=majority&appName=Cluster0")
+mongoose.connect(process.env.MONGO_URL)
 .then(() => console.log('Connected!'));
 
 const userSchema = mongoose.Schema({

@@ -1,4 +1,4 @@
-          <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -31,6 +31,7 @@
 <div class="flex flex-col  mb-10      gap-1  ">
                     <!-- <a href="/profile"><button  class="hover:bg-slate-600 w-full text-xl  py-1  text-center  flex  flex-row gap-5   "    > <i class="ri-home-4-line w-6  ml-10 mt-0.5"></i> profile </button></a> -->
                     <button  class="hover:bg-slate-600  text-xl  py-1  text-center w-full flex  flex-row gap-5   "    > <i class="ri-home-4-line w-6  ml-10 mt-0.5"></i> All Task  </button>
+                   <a href="/search"> <button  class="hover:bg-slate-600 w-full text-xl  py-1 text-center  flex  flex-row gap-4"   ><i class="ri-search-line w-6  ml-10 mt-0.5"></i>  Search</button></a>
                    <a href="/important"> <button  class="hover:bg-slate-600 w-full text-xl  py-1 text-center  flex  flex-row gap-4"   ><i class="ri-heart-3-fill w-6  ml-10 mt-0.5"></i>  Importent</button></a>
                    <a href="/completed"> <button  class="hover:bg-slate-600  w-full text-xl  py-1  flex  flex-row gap-4"  ><i class="ri-check-double-fill w-6  ml-10 mt-0.5"></i>Completed</button></a>
                     
@@ -43,12 +44,23 @@
  </div>
         </div>
         <div  class="  rounded-lg      h-[94%]   w-full  bg-zinc-800 overflow-y-auto">
-            <div class="sticky bg-zinc-700 top-1 z-50 flex items-center justify-between p-3 rounded-xl ">  <h1  class="text-3xl border-b-4  border-green-700"> <span>All Tasks</span></h1>  <div id="open-form" class="h-10 plus w-10 bg-black rounded-full flex items-center justify-center hover:bg-slate-600"><i class="ri-add-line "></i> </div>
+            <div class="sticky bg-zinc-700 top-1 z-50 flex items-center justify-between p-3 rounded-xl ">  <h1  class="text-3xl border-b-4  border-green-700"> <span>All Tasks</span></h1> 
+<!-- alltask.ejs -->
+
+
+
+
+<!-- Display filtered tasks -->
+
+
+               <div id="open-form" class="h-10 plus w-10 bg-black rounded-full flex items-center justify-center hover:bg-slate-600"><i class="ri-add-line "></i> </div>
             <div id="form-container" class=" farm hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]  absolute top-[12vw] right-[32vw]">
             
-              <form id="my-form" class=" bg-zinc-900 rounded-xl h-fit w-[30vw] flex flex-col gap-4 items-center justify-center -mt-[10vw]" action="/createtask" method="post">
-                <h1 class="text-center text-xl mb-4 ">Add Task</h1>
-                <div class="  ">
+      
+
+              <form id="my-form" class="border-gray-300 bg-zinc-900 rounded-xl h-fit w-[30vw] flex flex-col gap-4 items-center justify-center -mt-[10vw]" action="/createtask" method="post">
+                <h1 class="text-center text-xl mb-1 ">Add Task</h1>
+                <div >
                  
                   <label  class="block text-white font-bold mb-1">Title</label>
                   <input type="text" name="title" class="w-full px-3 py-1 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
@@ -56,11 +68,11 @@
              
               <div class="mb-2.5">
                   <label  class="block text-white font-bold mb-2">Task</label>
-                  <input type="task"  name="task" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
+                  <textarea type="task"  name="task" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required></textarea>
               </div>
               <div class="mb-2.5">
                   <label  class="block text-white font-bold mb-2">description</label>
-                  <input type="task"  name="description" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
+                  <textarea type="task"  name="description" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required></textarea>
               </div>
               <label for="deadline">Deadline:</label>
               <input class="bg-zinc-800" type="datetime-local" id="deadline" name="deadline" required>
@@ -73,35 +85,47 @@
               </form>
             </div>
           </div>
-        
-           <div  id="deleteTask"  class=" grid grid-cols-3  ms:grid-cols-3 lg:grid-cols-4 gap-4  mb-2 ">
+
+
+
+
+           <div  id="deleteTask"  class="  grid grid-cols-3  ms:grid-cols-3 lg:grid-cols-4 gap-4  mb-2 ">
         
             <% user.task.forEach(task=>{ %>
-              <div class="h-fit  min-w-60 flex  justify-between flex-col gap-2 rounded-xl ml-2 mt-4 overflow-y-auto text-wrap  shadow-[0_3px_10px_rgb(0,0,0,0.2)] p-5  bg-slate-800">   
+              <div class="h-64  min-w-60 flex  justify-between flex-col gap-2 rounded-xl ml-2 mt-4 overflow-hidden text-wrap  shadow-[0_3px_10px_rgb(0,0,0,0.2)] p-5  bg-slate-800">   
               <div class="flex  justify-between "> 
+            
+            
                 <a href="/like/task/<%= task._id %>">
-                  <% if(task.likes.indexOf(user._id) !== -1){ %>
-                    <i data-task-id="<%= task._id %>" class=" like-button ri-heart-3-fill text-red-600"></i>
-                  <% }else{ %>
-                    <i data-task-id="<%= task._id %>" class=" like-button ri-heart-3-line"></i>
-                  <% } %>
+                  <i id="likeIcon_<%= task._id %>" data-task-id="<%= task._id %>" class="like-button <%= task.likes.includes(user._id) ? 'ri-heart-3-fill text-red-600' : 'ri-heart-3-line text-white' %>" onclick="toggleLike('<%= task._id %>')"></i>
                 </a>
+                
+                
+                
+              <div class="flex gap-2">  <span > <%= task.createAt.toLocaleDateString('en-US', { day: 'numeric',month: 'long' }) %></span><span> <%= task.createAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span></div>
                  <a href="/delete/task/<%= task._id %>"><button id="deleteButton " ><i class="ri-close-line "></i></button></a>
               </div>
-              <div class="">
-               <h5 class=" text-2xl  rounded-md  ">  <%= task.title %></h5>
-                <h1 class="  rounded-md  text-pretty "> <%= task.task %></h1>
-                <h1 class="  rounded-md  text-pretty "> <%= task.description %></h1>
-                <span>Date: <%= task.createAt.toLocaleDateString('en-US', { day: 'numeric',month: 'long' }) %></span>
-      <br>
-                <span>Time: <%= task.createAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span>
-                <br>
-                <span>Deadline: <%= task.deadline.toLocaleDateString('en-US', { day: 'numeric',month: 'long' }) %></span>
-                <br>
-                <span>Deadline Time: <%= task.deadline.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span>
+              <div class="flex  flex-col mt-3">
+               
+                <button class="toggle-task-btn text-2xl rounded-md flex justify-center" type="button" onclick="openTaskPopup('<%= task.title %>', '<%= task.task %>', '<%= task.description %>')">
+                  <%= task.title %>
+                </button>
+
+
+
+                <h1 class="  rounded-md overflow-hidden text-pretty mt-2 "> <%= task.task %></h1>
+                <h1 class="  rounded-md  overflow-hidden text-pretty mt-2"> <%= task.description %></h1>
+                
+               
               </div>
-              <div class=" w-full flex justify-end ">
-                <a href="/complete/task/<%= task._id %>">
+              <div class=" w-full flex justify-between ">
+<div>
+                <span>Deadline: <br> <%= task.deadline.toLocaleDateString('en-US', { day: 'numeric',month: 'long' }) %></span>
+                <span> <%= task.deadline.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span>
+              </div>
+
+  <div>
+    <a href="/complete/task/<%= task._id %>">
                   <% if(user.complete.indexOf(task._id) !== -1){ %>
                     <button class="py-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-green-500 text-white hover:bg-green-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">completed</button>
                   <% }else{ %>
@@ -109,13 +133,29 @@
                   <% } %>
                 </a>
               </div>
+
+              </div>
               </div>
               <% }) %>
            </div>
+          </div>
+
+        <!-- Popup Container -->
+<div id="popupContainer" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-zinc-900 p-8 border border-gray-300 rounded-lg z-50">
+  <h2 class="text-lg font-semibold mb-4">Task Details</h2>
+  <form>
+   
+    <label for="popupTask" class=" mb-2 flex justify-center">Task:</label>
+    <textarea id="popupTask" name="popupTask" class="h-56 w-72 border border-gray-300  bg-slate-500 rounded-md px-3 py-2 mb-4" readonly ></textarea>
+    
+  </form>
+  <div class="flex justify-end">
+    <!-- <button class="px-4 py-2 bg-blue-500 text-white rounded-md mr-4 hover:bg-blue-600" onclick="saveTask()">Save</button> -->
+    <button class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400" onclick="closeTaskPopup()">Close</button>
+  </div>
+</div>
+          </form>
         </div>
-
-
-        
     </div>
 
     </div>
@@ -151,6 +191,65 @@ document.querySelector("#pencil").addEventListener("click",function(){
       document.querySelector("#inputfile").addEventListener("change",function(){
         document.querySelector("#fileform").submit()
       })
+
+
+      function openTaskPopup(title, task, description) {
+    document.getElementById('popupTask').value = task;
+    document.getElementById('popupContainer').classList.remove('hidden');
+  }
+
+  function closeTaskPopup() {
+    document.getElementById('popupContainer').classList.add('hidden');
+  }
+  async function saveTask() {
+    const taskContent = document.getElementById('popupTask').value; 
+   const taskData = {
+      title: taskTitle,
+      task: taskContent,
+      description: taskDescription
+    };
+
+    try {
+    
+      const response = await fetch('/task/:id', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(taskData)
+      });
+
+      if (response.ok) {
+        alert('Task saved successfully!');
+        closeTaskPopup();
+      } else {
+        alert('Error saving task!');
+      }
+    } catch (error) {
+      console.error('Error saving task:', error);
+      alert('Error saving task!');
+    }
+  }
+
+
+  function toggleLike(taskId) {
+  const likeIcon = document.getElementById('likeIcon_' + taskId);
+  const isLiked = likeIcon.classList.contains('ri-heart-3-fill');
+
+
+  if (isLiked) {
+    likeIcon.classList.remove('ri-heart-3-fill', 'text-red-600');
+    likeIcon.classList.add('ri-heart-3-line', 'text-black');
+  } else {
+    likeIcon.classList.remove('ri-heart-3-line', 'text-black');
+    likeIcon.classList.add('ri-heart-3-fill', 'text-red-600');
+  }
+
+}
+
+
+
+
 
 
     </script>
