@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>task manager</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/duhf6oxcf/image/upload/v1714493857/app_behvhi.png">
   <link rel="stylesheet" href="/stylesheets/style.css">
     <link
     href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
@@ -58,31 +59,30 @@
             
       
 
-              <form id="my-form" class="border-gray-300 bg-zinc-900 rounded-xl h-fit w-[30vw] flex flex-col gap-4 items-center justify-center -mt-[10vw]" action="/createtask" method="post">
-                <h1 class="text-center text-xl mb-1 ">Add Task</h1>
-                <div >
-                 
-                  <label  class="block text-white font-bold mb-1">Title</label>
-                  <input type="text" name="title" class="w-full px-3 py-1 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
-              </div>
-             
-              <div class="mb-2.5">
-                  <label  class="block text-white font-bold mb-2">Task</label>
-                  <textarea type="task"  name="task" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required></textarea>
-              </div>
-              <div class="mb-2.5">
-                  <label  class="block text-white font-bold mb-2">description</label>
-                  <textarea type="task"  name="description" class="w-full h-20 px-3 py-2 bg-slate-600   text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required></textarea>
-              </div>
-              <label for="deadline">Deadline:</label>
-              <input class="bg-zinc-800" type="datetime-local" id="deadline" name="deadline" required>
-              <br>
-              <div class="flex items-center gap-3  justify-between">
-                <button type="button" id="close-form" class="bg-white close2 text-black py-2 px-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md mb-2 hover:bg-gray-200 transition-colors duration-300">Cancel</button>
-                  <button type="submit" class="bg-blue-600 text-white py-2 px-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md mb-2 hover:bg-blue-500 transition-colors duration-300">Create</button>
-              </div>
-              
-              </form>
+              <form id="my-form" class="border-gray-300 bg-zinc-900 rounded-xl h-fit w-[30vw] flex flex-col gap-4 items-center justify-center -mt-[10vw] p-6" action="/createtask" method="post">
+                <h1 class="text-center text-2xl text-white mb-4">Add Task</h1>
+                <div>
+                    <label class="block text-white font-bold mb-1">Title</label>
+                    <input type="text" name="title" class="w-full px-3 py-2 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required>
+                </div>
+                <div>
+                    <label class="block text-white font-bold mb-1">Task</label>
+                    <textarea type="task" name="task" class="w-full h-20 px-3 py-2 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-white font-bold mb-1">Description</label>
+                    <textarea type="task" name="description" class="w-full h-20 px-3 py-2 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" required></textarea>
+                </div>
+                <div>
+                    <label for="deadline" class="block text-white font-bold mb-1">Deadline:</label>
+                    <input class="w-full px-3 py-2 bg-slate-600 text-white border border-gray-500 rounded-md focus:outline-none focus:border-gray-500" type="datetime-local" id="deadline" name="deadline" required>
+                </div>
+                <div class="flex justify-between gap-10">
+                    <button type="button" id="close-form" class="bg-gray-400 text-white py-2 px-4 rounded-md mb-2 hover:bg-gray-500 transition-colors duration-300">Cancel</button>
+                    <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md mb-2 hover:bg-blue-500 transition-colors duration-300">Create</button>
+                </div>
+            </form>
+            
             </div>
           </div>
 
@@ -97,7 +97,11 @@
             
             
                 <a href="/like/task/<%= task._id %>">
-                  <i id="likeIcon_<%= task._id %>" data-task-id="<%= task._id %>" class="like-button <%= task.likes.includes(user._id) ? 'ri-heart-3-fill text-red-600' : 'ri-heart-3-line text-white' %>" onclick="toggleLike('<%= task._id %>')"></i>
+                  <% if(task.likes.indexOf(user._id) !== -1){ %>
+                    <i data-post-id="<%= task._id %>" class=" ri-heart-3-fill text-red-600"></i>
+                  <% }else{ %>
+                    <i data-post-id="<%= task._id %>" class=" ri-heart-3-line text-white"></i>
+                  <% } %>
                 </a>
                 
                 
@@ -232,20 +236,20 @@ document.querySelector("#pencil").addEventListener("click",function(){
   }
 
 
-  function toggleLike(taskId) {
-  const likeIcon = document.getElementById('likeIcon_' + taskId);
-  const isLiked = likeIcon.classList.contains('ri-heart-3-fill');
+//   function toggleLike(taskId) {
+//   const likeIcon = document.getElementById('likeIcon_' + taskId);
+//   const isLiked = likeIcon.classList.contains('ri-heart-3-fill');
 
 
-  if (isLiked) {
-    likeIcon.classList.remove('ri-heart-3-fill', 'text-red-600');
-    likeIcon.classList.add('ri-heart-3-line', 'text-black');
-  } else {
-    likeIcon.classList.remove('ri-heart-3-line', 'text-black');
-    likeIcon.classList.add('ri-heart-3-fill', 'text-red-600');
-  }
+//   if (isLiked) {
+//     likeIcon.classList.remove('ri-heart-3-fill', 'text-red-600');
+//     likeIcon.classList.add('ri-heart-3-line', 'text-black');
+//   } else {
+//     likeIcon.classList.remove('ri-heart-3-line', 'text-black');
+//     likeIcon.classList.add('ri-heart-3-fill', 'text-red-600');
+//   }
 
-}
+// }
 
 
 
