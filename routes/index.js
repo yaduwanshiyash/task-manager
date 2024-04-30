@@ -112,7 +112,7 @@ router.get("/like/task/:id", isLoggedIn, async function(req,res){
     const user = await userModel.findOne({ username: req.session.passport.user})
     const task = await taskModel.findOne({_id: req.params.id})
   
-    if(task.likes.indexOf(task._id) == -1){
+    if(task.likes.indexOf(user._id) == -1){
       task.likes.push(user._id)
     }
     else{
